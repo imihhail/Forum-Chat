@@ -25,6 +25,7 @@ type Message struct {
 func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	//http.HandleFunc("/register", results)
 
 	http.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
 		conn, _ := upgrader.Upgrade(w, r, nil)
@@ -89,6 +90,7 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "static/index.html")
+		
 	})
 
 	fmt.Println("Server is running at: http://localhost:4040")
