@@ -1,0 +1,28 @@
+* {
+    box-sizing: border-box;
+}
+
+.chatWindowContainer {  
+    background: hsl(180, 8%, 86%);
+    width: 30vw;
+    border-radius: 1vw;
+    border: 0.2vw solid black;
+}
+
+.allMessages {
+    height: 30vh;
+    margin: 1vw;
+    margin-right: 0.5vw;
+}
+
+.textArea {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.sendMsgButton {
+    border-radius: 0 0 0.8vw 0.8vw;
+    border: none;
+    background: rgb(140, 140, 140);
+}
