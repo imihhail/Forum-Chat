@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    font-size: 1em;
 }
 
 .chatWindowContainer {  
@@ -25,15 +26,17 @@
     border-radius: 0 0 0.8vw 0.8vw;
     border: none;
     background: rgb(140, 140, 140);
+    margin-top: 300px;
 }
 
 .registerWindow {
-    border: 5px solid;
+    border: 0.3vh solid;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    padding: 10px;
-    height: 40vh;
-    width: 80vh;
+    padding: 0px;
+    height: 80vh;
+    width: 30vw;
+    display: grid
 }
