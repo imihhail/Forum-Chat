@@ -1,13 +1,16 @@
-package endPoints
+package gofiles
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
-func handleRegister(w http.ResponseWriter, r *http.Request) {
+var Authorized = false
+var Logged_user string
+var db_id string
+
+func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	var user struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -19,32 +22,24 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var Authorized = false
 	if r.Method == "POST" {
 		// Get password and username from database if users inserted email exists in database.
-		pw_userID_check := db.QueryRowContext(context.Background(), "SELECT ID, PASSWORD FROM people WHERE EMAIL = ? OR USERNAME = ?", user.Username, user.Username)
-		fmt.Println(user.Username)
-		fmt.Println(pw_userID_check)
+		pw_userID_check := Db.QueryRowContext(context.Background(), "SELECT ID, PASSWORD, USERNAME FROM people WHERE EMAIL = ? OR USERNAME = ?", user.Username, user.Username)
 
 		var db_password string
-		var db_id string
 		email_found := true
 		var msgToClient = ""
 
 		// If err != nil, then email is not found from database.
-		if err := pw_userID_check.Scan(&db_id, &db_password); err != nil {
-			fmt.Println(err)
+		if err := pw_userID_check.Scan(&db_id, &db_password, &Logged_user); err != nil {
 			Authorized = false
 			email_found = false
 			msgToClient = "E-mail or username is not registered!"
-			fmt.Println("ID1", db_id)
-			fmt.Println("PW1", db_password)
 
 		} else if user.Password != db_password && email_found {
 			Authorized = false
 			msgToClient = "Incorrect password!"
-			fmt.Println("ID2", db_id)
-			fmt.Println("PW2", db_password)
+
 		} else {
 			Authorized = true
 		}
@@ -55,8 +50,9 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if Authorized {
+			CreateCookie(w)
 			response.ErrorMsg = ""
-			response.Username = user.Username
+			response.Username = Logged_user
 		}
 
 		if !Authorized {
@@ -73,6 +69,5 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 		// Set the content type to application/json and write the response
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonResponse)
-
 	}
 }

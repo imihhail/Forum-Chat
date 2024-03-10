@@ -1,6 +1,15 @@
 * {
     box-sizing: border-box;
-    font-size: 1em;
+    font-size: 2vh;
+    margin: 0;
+}
+
+header {
+    width: 100%;
+    background-color: rgb(200, 200, 200);
+    padding: 1vh;
+    justify-content: flex-end;
+    display:flex;
 }
 
 .chatWindowContainer {  
@@ -39,4 +48,20 @@
     height: 80vh;
     width: 30vw;
     display: grid
+}
+
+.loginWindow {
+    border: 0.3vh solid;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0px;
+    height: 40vh;
+    width: 30vw;
+    display: grid
+}
+
+a {
+    cursor: pointer;
 }

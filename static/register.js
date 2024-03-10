@@ -1,37 +1,64 @@
-import { login } from './login.js';
+import { router } from './router.js';
+
+let emailInput
+let userNameInput
+let passWordInput  
+let firstNameInput
+let lastNameInput
+let genderInput
+let ageInput
+
+let header = document.querySelector('header')
+let registerForm = document.createElement('form');
+registerForm.className = 'registerWindow';
+let contex = document.getElementById('app')
+
+export function CheckSession() {
+    fetch('/sessionCheck')
+    .then(response => response.text())
+    .then(username => username != '' ? router('/home', username) : registration())
+}
 
 export function registration() {
-    let registerForm = document.createElement('form');
-    registerForm.className = 'registerWindow';
+    let loginLink = document.createElement('a');
+    loginLink.innerHTML = `<b>Login</b>`
+    header.appendChild(loginLink)
 
-    let emailInput = document.createElement('input');
+    loginLink.addEventListener('click', function(event){
+        registerForm.innerHTML = ''
+        event.preventDefault();
+        router('/login');
+        loginLink.remove()
+    });
+    
+    emailInput = document.createElement('input');
     emailInput.setAttribute('type', 'email');
     emailInput.setAttribute('placeholder', 'E-mail');
     emailInput.required = true;
     registerForm.appendChild(emailInput);
 
-    let userNameInput = document.createElement('input');
+    userNameInput = document.createElement('input');
     userNameInput.setAttribute('placeholder', 'Username');
     userNameInput.required = true;
     registerForm.appendChild(userNameInput);
 
-    let passWordInput = document.createElement('input');
+    passWordInput = document.createElement('input');
     passWordInput.setAttribute('type', 'password');
     passWordInput.setAttribute('placeholder', 'Password');
     passWordInput.required = true;
     registerForm.appendChild(passWordInput);
 
-    let firstNameInput = document.createElement('input');
+    firstNameInput = document.createElement('input');
     firstNameInput.setAttribute('placeholder', 'First Name');
     firstNameInput.required = true;
     registerForm.appendChild(firstNameInput);
 
-    let lastNameInput = document.createElement('input');
+    lastNameInput = document.createElement('input');
     lastNameInput.setAttribute('placeholder', 'Last Name');
     lastNameInput.required = true;
     registerForm.appendChild(lastNameInput);
 
-    let genderInput = document.createElement('select');
+    genderInput = document.createElement('select');
     genderInput.innerHTML = `
       <option value="male">Male</option>
       <option value="female">Female</option>
@@ -40,50 +67,53 @@ export function registration() {
     genderInput.required = true;
     registerForm.appendChild(genderInput);
 
-    let ageInput = document.createElement('input');
+    ageInput = document.createElement('input');
     ageInput.setAttribute('type', 'number');
     ageInput.setAttribute('placeholder', 'Age');
     ageInput.required = true;
     registerForm.appendChild(ageInput);
 
     let registerButton = document.createElement('button');
-    registerButton.innerHTML = 'Register';
+    registerButton.innerHTML = `<b>Register</b>`;
     registerButton.type = 'submit';
     registerForm.appendChild(registerButton);
 
-    registerForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+    registerForm.removeEventListener('submit', handleRegiser)
+    registerForm.addEventListener('submit', handleRegiser) 
 
-        let email = emailInput.value;
-        let userName = userNameInput.value;
-        let passWord = passWordInput.value;     
-        let fName = firstNameInput.value;
-        let lName = lastNameInput.value;
-        let gender = genderInput.value;
-        let age = ageInput.value;
+    contex.appendChild(registerForm);
+}
 
-        fetch('http://localhost:4040/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({email: email, username: userName, password: passWord, firstname: fName, lastname: lName, gender: gender, age: age}),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Username:', data.username);
-            console.log('Status:', data.errormsg);
-            if (data.errormsg != '') {
-                alert(data.errormsg)
-            } else {
-                registerForm.remove()
-                login()
-            }
-        })
-        .catch((error) => {
-        console.error('Error:', error);
-        });
-    });
+function handleRegiser(event){
+    event.preventDefault()
 
-    document.body.appendChild(registerForm);
+    let email = emailInput.value;
+    let userName = userNameInput.value;
+    let passWord = passWordInput.value;     
+    let fName = firstNameInput.value;
+    let lName = lastNameInput.value;
+    let gender = genderInput.value;
+    let age = ageInput.value;
+
+    fetch('http://localhost:4040/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email: email, username: userName, password: passWord, firstname: fName, lastname: lName, gender: gender, age: age}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.errormsg != '') {
+            alert(data.errormsg)
+        } else {
+            registerForm.innerHTML = ''
+            event.preventDefault();
+            router('/login');
+            document.querySelector('a').remove()
+        }
+    })
+    .catch((error) => {
+    console.error('Error:', error);
+    })
 }

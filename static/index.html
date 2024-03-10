@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="static/real-time-forum.css" rel="stylesheet">
     <title>Forum</title>
 </head>
-
+<header></header>
 <body>
+    <div id="app"></div>
     <script type="module">
-       // import { webSocketServer } from '/static/webSocket.js'
-        import { registration } from '/static/register.js'
-
-        registration()
-       // webSocketServer() 
+        import { router } from '/static/router.js'
+        router(window.location.pathname);
     </script>
 </body>
-
 </html>
