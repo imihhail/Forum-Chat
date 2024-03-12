@@ -2,7 +2,6 @@ package gofiles
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -22,11 +21,6 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 	var cat2 = user.Categories[1]
 	var cat3 = user.Categories[2]
 	var cat4 = user.Categories[3]
-
-	fmt.Println(cat1)
-	fmt.Println(cat2)
-	fmt.Println(cat3)
-	fmt.Println(cat4)
 
 	postToDatabase, err := Db.Prepare("INSERT INTO POSTS(CATEGORIE, CATEGORIE2, CATEGORIE3, CATEGORIE4, POST, USERNAME) VALUES (?,?,?,?,?,?)")
 	if err != nil {

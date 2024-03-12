@@ -32,6 +32,9 @@ func main() {
 	http.HandleFunc("/register", gofiles.HandleRegister)
 	http.HandleFunc("/posts", gofiles.HandlePosts)
 	http.HandleFunc("/showposts", gofiles.ShowPosts)
+	http.HandleFunc("/postcomment", gofiles.PostComment)
+	http.HandleFunc("/showcomments", gofiles.ShowComments)
+	http.HandleFunc("/likes", gofiles.Likes)
 	http.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
 		conn, _ := upgrader.Upgrade(w, r, nil)
 

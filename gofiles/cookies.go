@@ -46,14 +46,11 @@ func CreateCookie(w http.ResponseWriter) {
 // Check if session is exists. If not, user is not logged in
 func CheckSession(w http.ResponseWriter, r *http.Request){
 	Cookie, err := r.Cookie("session_token")
-	fmt.Println("Check sess cookie: ",Cookie)
 	
 	if err != nil {
-		fmt.Println("No sessions found!")
 		w.Write([]byte(""))
 	} else {	
 		username := sessions[Cookie.Value]
-		fmt.Println("Username: ", username)
 		w.Write([]byte(username))
 	}
 }

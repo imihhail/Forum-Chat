@@ -4,6 +4,11 @@
     margin: 0;
 }
 
+#app {
+    margin: 2vh 5vw;
+}
+
+
 header {
     width: 100%;
     background-color: rgb(200, 200, 200);
@@ -29,6 +34,10 @@ header {
     display: flex;
     width: 100%;
     flex-direction: column;
+}
+
+textarea {
+    resize: none;
 }
 
 .sendMsgButton {
@@ -64,4 +73,29 @@ header {
 
 a {
     cursor: pointer;
+}
+
+.userPostInput {
+    margin-bottom: 3vh;
+}
+
+.postDiv {
+    width: 100%;
+    background-color: rgb(237, 232, 232);
+    padding: 1vh;
+    margin-top: 1vh;
+}
+
+.commendDiv {
+    border: 0.5vh solid;
+    position: fixed;
+    background-color: rgb(182, 182, 182);
+    opacity: 0.8;
+    width: 40vw;
+    min-height: 20vh;
+    max-height: 75vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
 }
