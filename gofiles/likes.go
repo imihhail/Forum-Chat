@@ -133,7 +133,11 @@ func Likes(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	UpDatePostLikes(w, user.LikedPostId)
+	if table == "POSTLIKES" || table == "POSTDISLIKES" {
+		UpDatePostLikes(w, user.LikedPostId)
+	} else {
+		UpDateCommentLikes(w, user.LikedPostId)
+	}
 }
 
 func UpDatePostLikes(w http.ResponseWriter, id int) {
@@ -150,7 +154,35 @@ func UpDatePostLikes(w http.ResponseWriter, id int) {
 
 	err = Db.QueryRow("select count(*) from POSTDISLIKES WHERE POSTID = ?", id).Scan(&response.DislikeCount)
 	if err != nil {
+		fmt.Println("Error selecting dislike count.", err)
+		return
+	}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonResponse)
+}
+
+func UpDateCommentLikes(w http.ResponseWriter, id int) {
+	var response struct {
+		LikeCount    int `json:"likeCountAfterLike"`
+		DislikeCount int `json:"disLikeCountAfterLike"`
+	}
+
+	err := Db.QueryRow("select count(*) from COMMENTLIKES WHERE POSTID = ?", id).Scan(&response.LikeCount)
+	if err != nil {
 		fmt.Println("Error selecting like count.", err)
+		return
+	}
+
+	err = Db.QueryRow("select count(*) from COMMENTDISLIKES WHERE POSTID = ?", id).Scan(&response.DislikeCount)
+	if err != nil {
+		fmt.Println("Error selecting dislike count.", err)
 		return
 	}
 

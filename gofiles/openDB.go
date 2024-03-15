@@ -10,7 +10,6 @@ import (
 var Db *sql.DB
 
 func init() {
-	// Initialize the database connection
 	Db, _ = sql.Open("sqlite3", "./forumDatabase.db")
 
 	usersTable, err := Db.Prepare("CREATE TABLE if not exists PEOPLE(ID integer primary key, EMAIL text, USERNAME text, PASSWORD text, FNAME text, LNAME text, GENDER text, AGE text)")
@@ -31,7 +30,7 @@ func init() {
 	}
 	commentsTable.Exec()
 
-	postLikesTable, err := Db.Prepare("CREATE TABLE if not exists POSTLIKES(ID integer primary key, POSTID integer, USERNAME text)")
+	postLikesTable, err := Db.Prepare("CREATE TABLE if not exists POSTLIKES(ID integer primary key, POSTID integer, USERNAME text default '')")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,13 +42,13 @@ func init() {
 	}
 	postDisLikesTable.Exec()
 
-	commLikesTable, err := Db.Prepare("CREATE TABLE if not exists COMMENTLIKES(ID integer primary key, POSTID integer, USERID integer)")
+	commLikesTable, err := Db.Prepare("CREATE TABLE if not exists COMMENTLIKES(ID integer primary key, POSTID integer, USERNAME text)")
 	if err != nil {
 		log.Fatal(err)
 	}
 	commLikesTable.Exec()
 
-	commentDisLikesTable, err := Db.Prepare("CREATE TABLE if not exists COMMENTDISLIKES (ID integer primary key, POSTID integer, USERID integer)")
+	commentDisLikesTable, err := Db.Prepare("CREATE TABLE if not exists COMMENTDISLIKES (ID integer primary key, POSTID integer, USERNAME text)")
 	if err != nil {
 		log.Fatal(err)
 	}

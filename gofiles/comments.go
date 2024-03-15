@@ -43,7 +43,7 @@ func ShowComments(w http.ResponseWriter, r *http.Request) {
 	}
 	postID := string(body)
 
-	sql_comments, err := Db.Query("Select COMMENT, USERNAME, ID from COMMENTSTABLE where POSTID = ?", postID)
+	sql_comments, err := Db.Query("Select COMMENT, USERNAME, ID, LIKECOUNT, DISLIKECOUNT from COMMENTSTABLE where POSTID = ?", postID)
 	if err != nil {
 		fmt.Println("Error getting comments from database:", err)
 	}
@@ -53,6 +53,8 @@ func ShowComments(w http.ResponseWriter, r *http.Request) {
 		AllComments   []string
 		AllUsers      []string
 		AllCommentIDs []int
+		LikeCount    []int
+		DisLikeCount []int
 	}
 
 	var AllCommentData []Data
@@ -61,11 +63,13 @@ func ShowComments(w http.ResponseWriter, r *http.Request) {
 		var commentCreator string
 		var comment string
 		var postID int
+		var likeCount int
+		var disLikeCount int
 
-		if err := sql_comments.Scan(&commentCreator, &comment, &postID); err != nil {
+		if err := sql_comments.Scan(&commentCreator, &comment, &postID, &likeCount, &disLikeCount); err != nil {
 			log.Fatal(err)
 		}
-		AllCommentData = append(AllCommentData, Data{AllUsers: []string{commentCreator},AllComments: []string{comment}, AllCommentIDs: []int{postID}})
+		AllCommentData = append(AllCommentData, Data{AllUsers: []string{commentCreator},AllComments: []string{comment}, AllCommentIDs: []int{postID}, LikeCount: []int{likeCount}, DisLikeCount: []int{disLikeCount}})
 	}
 
 	jsonResponse, err := json.Marshal(AllCommentData)

@@ -1,4 +1,3 @@
-import { home } from './home.js';
 import { router } from './router.js';
 
 let userNameInput
