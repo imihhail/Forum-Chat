@@ -15,6 +15,7 @@ func ShowPosts(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error counting POSTS.", err)
 		return
 	}
+
 	sql_posts, err := Db.Query("SELECT USERNAME, POST, ID, LIKECOUNT, DISLIKECOUNT, CATEGORIE, CATEGORIE2, CATEGORIE3, CATEGORIE4 FROM POSTS")
 	if err != nil {
 		fmt.Println("Error filtering posts from database:", err)
@@ -22,7 +23,7 @@ func ShowPosts(w http.ResponseWriter, r *http.Request) {
 	defer sql_posts.Close()
 
 	var Result [][]string
-
+	
 	for i := 1; i <= postCount; i++ {
 		postLikersQuery := "SELECT USERNAME FROM POSTLIKES WHERE POSTID = ?"
 		rows, err := Db.Query(postLikersQuery, i)

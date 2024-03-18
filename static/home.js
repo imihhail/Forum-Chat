@@ -1,4 +1,5 @@
-import { router } from './router.js';
+import { router } from './router.js'
+import { displayFriends } from './friends.js';
 
 let loggedInUser
 
@@ -17,6 +18,7 @@ export function home(username) {
     header.appendChild(currentUser)
 
     let logOut = document.createElement('p')
+    logOut.className = 'logout'
     logOut.innerHTML = 'Logout'
     logOut.style.marginLeft = '1vw'
 
@@ -24,7 +26,7 @@ export function home(username) {
         event.preventDefault()
         header.innerHTML = ''
         mainContent.innerHTML = ''
-        fetch('/logout')
+        
         router('/login')
     })
     header.appendChild(logOut)
@@ -364,12 +366,6 @@ function postComment(postID, comment) {
 
 function createSideBar() {
     let sidebar = document.createElement('div')
-
-    let closeButton = document.createElement('div')
-    closeButton.innerHTML = '&times;'
-    closeButton.className = 'sidecloseButton'
-    
-
     sidebar.className = 'sidebar'
     sidebar.innerHTML = `
     <nav class="navbar">
@@ -384,6 +380,10 @@ function createSideBar() {
     </ul>
     </nav>
     `
+    let closeButton = document.createElement('div')
+    closeButton.innerHTML = '&times;'
+    closeButton.className = 'sidecloseButton'
+
     sidebar.prepend(closeButton)
     app.prepend(sidebar)
     
@@ -414,6 +414,7 @@ function createSideBar() {
 
     let cat4 = document.querySelector('.Misc')
     cat4.addEventListener('click', () => filterPosts(cat4))
+    displayFriends(sidebar, loggedInUser)
 }
 
 // Filter categories and my liked posts

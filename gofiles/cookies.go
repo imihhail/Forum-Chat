@@ -31,7 +31,6 @@ func CreateCookie(w http.ResponseWriter) {
 
 	// Store session ID and user ID into sessions map.
 	sessions[sessionKey] = Logged_user
-	fmt.Println(sessions)
 
 	http.SetCookie(w, &http.Cookie{
 		Name:    "session_token",
@@ -46,8 +45,8 @@ func CreateCookie(w http.ResponseWriter) {
 // Check if session is exists. If not, user is not logged in
 func CheckSession(w http.ResponseWriter, r *http.Request){
 	Cookie, err := r.Cookie("session_token")
-	
-	if err != nil {
+
+	if err != nil {	
 		w.Write([]byte(""))
 	} else {	
 		username := sessions[Cookie.Value]
@@ -55,11 +54,10 @@ func CheckSession(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-
 func Logout(w http.ResponseWriter, r *http.Request) {
 	Cookie, err := r.Cookie("session_token")
 	if err != nil {
-		fmt.Println("No cookie found:", err)
+		fmt.Println("No cookie found")
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -72,6 +70,5 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	})
 
 	delete(sessions, Cookie.Value)
-	fmt.Println("Sessioonid: ", sessions)
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }

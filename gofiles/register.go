@@ -2,7 +2,6 @@ package gofiles
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -22,7 +21,6 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(user.Username)
 	var Status = false
 	// Insert user input into the database only if POST method is used. Otherwise, empty fields will be inserted into the database, everytime when the page is loaded.
 	if r.Method == "POST" {
@@ -66,6 +64,13 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 		if Status {
 			response.ErrorMsg = ""
 			response.Username = user.Username
+			
+			// Update registered user for all clients
+			AllUsers = nil
+			registeredUsers := ShowUsers()
+			for client := range clients {
+				SendUsers(client, registeredUsers)
+			}
 		}
 		if !Status {
 			response.ErrorMsg = "E-mail or Username already taken!"
@@ -83,3 +88,5 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonResponse)
 	}
 }
+
+

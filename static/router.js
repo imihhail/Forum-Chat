@@ -6,14 +6,14 @@ export function router(route, username = null){
     document.getElementById('app').innerHTML = '';
     
     switch(route) {
-        case '/':
+        case '/':    
             CheckSession()
             break;
-        case '/home':
+        case '/home':    
             home(username);
             break;
         case '/register':
-            registration();
+            CheckSession()
             break;
         case '/login':
             login();

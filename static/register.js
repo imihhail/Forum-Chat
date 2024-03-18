@@ -14,6 +14,7 @@ registerForm.className = 'registerWindow';
 let contex = document.getElementById('app')
 
 export function CheckSession() {
+ 
     fetch('/sessionCheck')
     .then(response => response.text())
     .then(username => username != '' ? router('/home', username) : registration())

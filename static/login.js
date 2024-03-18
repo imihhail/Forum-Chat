@@ -14,9 +14,9 @@ export function login() {
     header.appendChild(loginLink);
 
     loginLink.addEventListener('click', function(event){
-        event.preventDefault();
+        event.preventDefault()
         loginForm.innerHTML = ''
-        router('/register');
+        router('/register')
         loginLink.remove()
     });
 
