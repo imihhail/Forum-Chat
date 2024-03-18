@@ -30,10 +30,6 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 	}()
 	
 	OnlineUsers = nil
-	for _, user := range sessions {
-		OnlineUsers = append(OnlineUsers, user)
-		//Send OnlineUsers to all clients
-	}
 
 	SendUsers(conn, registeredUsers)
 	updateOnlineUsers()
@@ -41,9 +37,9 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("Error reading msg", err)
 			return
 		}
+
 		fmt.Printf("%s send: %s\n", conn.RemoteAddr(), msg)
 	
 		for client := range clients {

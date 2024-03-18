@@ -2,9 +2,13 @@ export function displayFriends(sidebar, loggedInUser) {
     let usersDiv = document.createElement('div')
     let socket = new WebSocket("ws://localhost:4040/echo")
        
-    socket.onopen = (e) => console.log("Websocket connected!")
+    socket.onopen = () => console.log("Websocket connected!")
+
     socket.onmessage = function(event) {    
         let data = JSON.parse(event.data)
+        if (data.type == 'message') {
+            appendMessageToUI(data.sentMsg, data.msgSender);
+        }
 
         if (data.type == 'onlineUsers') {
             let registeredUsers = document.querySelectorAll('.registered')
@@ -19,12 +23,11 @@ export function displayFriends(sidebar, loggedInUser) {
                 AllUsers.innerHTML = data.registeredusers[i]
                 AllUsers.style.color = 'white'
                 AllUsers.style.opacity = '0.5'
-                AllUsers.addEventListener('click', () => openChat(loggedInUser, AllUsers.textContent))
+                AllUsers.addEventListener('click', () => openChat(loggedInUser, AllUsers.textContent, socket))
                 usersDiv.appendChild(AllUsers)
             }
         }
-        sidebar.appendChild(usersDiv)
-       // appendMessageToUI(event.data);        
+        sidebar.appendChild(usersDiv)    
     }
     
     socket.onerror = (error) => console.log("Socket error:", error)
@@ -38,23 +41,19 @@ export function displayFriends(sidebar, loggedInUser) {
             console.error('Error:', error);
         });
     })
-    //socket.onclose = () => fetch('/logout')
+    //socket.onclose = () => 
     
-    function appendMessageToUI(message) {
+    function appendMessageToUI(message, sender) {
         const allMessages = document.querySelector('.allMessages');
         const msgOutput = document.createElement('p');
-        msgOutput.innerHTML = `${loggedInUser}: ${message}`
+        msgOutput.innerHTML = `${sender}: ${message}`
         allMessages.appendChild(msgOutput);
-       // let header = document.querySelector('header')
-       // header.innerHTML = 'New message!'
+       //WORKING! let header = document.querySelector('header')
+       //WORKING! header.innerHTML = 'New message!'
     }
-
-
 }
 
-function openChat(msgSender, msgReciever) {
-    console.log(msgSender, msgReciever)
-
+function openChat(msgSender, msgReciever, socket) {
     let chatWindowContainer = document.createElement('div')
     chatWindowContainer.className = 'chatWindowContainer'
 
@@ -83,12 +82,16 @@ function openChat(msgSender, msgReciever) {
 
     function createMsg(){
         let typeBox = document.querySelector('.sentText').value
-    
+     
         //let allMessages = document.querySelector('.allMessages')
         //let msgOutput = document.createElement('p')
         //msgOutput.innerHTML = `${loggedInUser}: ${typeBox}`
-    
-        let msg = typeBox
+
+        let msg = JSON.stringify({
+            msgSender: msgSender,
+            type: "message",
+            sentMsg: typeBox
+        });
         socket.send(msg)
        // allMessages.appendChild(msgOutput)
     }
