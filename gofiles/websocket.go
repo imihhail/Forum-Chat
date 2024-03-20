@@ -13,7 +13,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-var clients = make(map[*websocket.Conn]bool)
+var clients = make(map[string]*websocket.Conn)
 var OnlineUsers []string
 
 func WebSocket(w http.ResponseWriter, r *http.Request) {
@@ -21,33 +21,56 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 
 	conn, _ := upgrader.Upgrade(w, r, nil)
 
-	clients[conn] = true
+	clients[returnUser(r)] = conn
 
 	defer func() {
-		delete(clients, conn)
+		fmt.Println("Kustub kasutaja", returnUser(r))
+		delete(clients, returnUser(r))
 		conn.Close()
 		updateOnlineUsers()
 	}()
-	
+
 	OnlineUsers = nil
+	fmt.Println("Kliendid: ", clients)
 
 	SendUsers(conn, registeredUsers)
 	updateOnlineUsers()
-	
+
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
 			return
 		}
 
-		fmt.Printf("%s send: %s\n", conn.RemoteAddr(), msg)
-	
-		for client := range clients {
-			if err = client.WriteMessage(websocket.TextMessage, msg); err != nil {
-				fmt.Println("write:", err)
-				return
-			}
+		//fmt.Printf("%s send: %s\n", conn.RemoteAddr(), msg)
+
+		var message struct {
+			MsgSender   string `json:"msgSender"`
+			MsgReciever string `json:"msgReciever"`
+			Type        string `json:"type"`
+			SentMsg     string `json:"sentMsg"`
 		}
+
+		err = json.Unmarshal(msg, &message)
+		if err != nil {
+			fmt.Println("error decoding message:", err)
+			continue
+		}
+
+		saveChat, err := Db.Prepare("insert into PRIVATEMESSAGES (MSGSENDER, MSGRECIEVER, TEXTMSG) values (?, ?, ?)")
+		if err != nil {
+			fmt.Println("Error retrieving textmessage")
+			return
+		}
+
+		_, err = saveChat.Exec(message.MsgSender, message.MsgReciever, message.SentMsg)
+		if err != nil {
+			fmt.Println("Error saving piravemessage into database")
+			return
+		}
+
+		clients[message.MsgReciever].WriteMessage(websocket.TextMessage, msg)
+		clients[message.MsgSender].WriteMessage(websocket.TextMessage, msg)
 	}
 }
 
@@ -62,15 +85,15 @@ func SendUsers(conn *websocket.Conn, registeredUsers []string) {
 	registeredUsersJSON, _ := json.Marshal(Data)
 
 	if err := conn.WriteMessage(websocket.TextMessage, registeredUsersJSON); err != nil {
-		fmt.Println("write:", err)
+		fmt.Println("write1:", err)
 		return
 	}
 }
 
 func SendOnlineUsers(conn *websocket.Conn) {
 	var Data struct {
-		Type   string   `json:"type"`
-		Users  []string `json:"onlineUsers"`
+		Type  string   `json:"type"`
+		Users []string `json:"onlineUsers"`
 	}
 
 	Data.Type = "onlineUsers"
@@ -79,7 +102,7 @@ func SendOnlineUsers(conn *websocket.Conn) {
 	onlineUsersJSON, _ := json.Marshal(Data)
 
 	if err := conn.WriteMessage(websocket.TextMessage, onlineUsersJSON); err != nil {
-		fmt.Println("write:", err)
+		fmt.Println("write2:", err)
 		return
 	}
 }
@@ -89,7 +112,17 @@ func updateOnlineUsers() {
 	for _, user := range sessions {
 		OnlineUsers = append(OnlineUsers, user)
 	}
-	for client := range clients {
-		SendOnlineUsers(client)
+	for _, conn := range clients {
+		SendOnlineUsers(conn)
 	}
+}
+
+func returnUser(r *http.Request) string {
+	Cookie, err := r.Cookie("session_token")
+
+	if err != nil {
+		fmt.Println("Error sending cookie")
+		return ""
+	}
+	return sessions[Cookie.Value]
 }

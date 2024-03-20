@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/postcomment", gofiles.PostComment)
 	http.HandleFunc("/showcomments", gofiles.ShowComments)
 	http.HandleFunc("/likes", gofiles.Likes)
+	http.HandleFunc("/chathistory", gofiles.SendChatHistory)
 	http.HandleFunc("/echo", gofiles.WebSocket) 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "static/index.html")

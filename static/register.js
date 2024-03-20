@@ -14,7 +14,6 @@ registerForm.className = 'registerWindow';
 let contex = document.getElementById('app')
 
 export function CheckSession() {
- 
     fetch('/sessionCheck')
     .then(response => response.text())
     .then(username => username != '' ? router('/home', username) : registration())
@@ -27,7 +26,7 @@ export function registration() {
 
     loginLink.addEventListener('click', function(event){
         registerForm.innerHTML = ''
-        event.preventDefault();
+        event.preventDefault()
         router('/login');
         loginLink.remove()
     });

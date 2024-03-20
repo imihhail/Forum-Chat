@@ -67,9 +67,10 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 			
 			// Update registered user for all clients
 			AllUsers = nil
-			registeredUsers := ShowUsers()
-			for client := range clients {
-				SendUsers(client, registeredUsers)
+			var registeredUsers []string
+			registeredUsers = append(registeredUsers, user.Username)
+			for _, conn := range clients  {
+				SendUsers(conn, registeredUsers)
 			}
 		}
 		if !Status {

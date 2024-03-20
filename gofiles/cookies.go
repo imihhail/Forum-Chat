@@ -10,6 +10,7 @@ import (
 
 // Create a map to store session ID and user ID to display correct logged in user, dependng which session is currently active.
 var sessions = make(map[string]string)
+var SessionUSer *string
 
 // If user logs in successfully, generate a session ID for the CreateCookie function.
 func GenerateSessionID() string {
