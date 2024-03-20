@@ -54,7 +54,7 @@ func init() {
 	}
 	commentDisLikesTable.Exec()
 
-	privateMsgTable, err := Db.Prepare("CREATE TABLE if not exists PRIVATEMESSAGES (ID integer primary key, MSGSENDER text, MSGRECIEVER text, TEXTMSG text)")
+	privateMsgTable, err := Db.Prepare("CREATE TABLE if not exists PRIVATEMESSAGES (ID integer primary key, MSGSENDER text, MSGRECIEVER text, TEXTMSG text, TIME text)")
 	if err != nil {
 		log.Fatal(err)
 	}

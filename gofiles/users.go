@@ -29,14 +29,16 @@ func ShowUsers() []string {
 }
 
 func SendChatHistory(w http.ResponseWriter, r *http.Request) {
-	type ChatHistory struct {	
+	type ChatHistory struct {
 		Sender string
 		Text   string
+		Time   string
 	}
 
 	var chatHistory struct {
-		MsgSender   string `json:"msgSender"`
-		MsgReciever string `json:"msgReciever"`
+		MsgSender        string `json:"msgsender"`
+		MsgReciever      string `json:"msgreciever"`
+		LoadMoreMessages string `json:"loadMessages"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&chatHistory)
@@ -45,7 +47,7 @@ func SendChatHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sql_chat, err := Db.Query("SELECT MSGSENDER, TEXTMSG FROM PRIVATEMESSAGES WHERE (MSGSENDER = ? AND MSGRECIEVER = ?) OR (MSGSENDER = ? AND MSGRECIEVER = ?) ORDER BY ID DESC LIMIT 10", chatHistory.MsgSender, chatHistory.MsgReciever, chatHistory.MsgReciever, chatHistory.MsgSender)
+	sql_chat, err := Db.Query("SELECT MSGSENDER, TEXTMSG, TIME FROM PRIVATEMESSAGES WHERE (MSGSENDER = ? AND MSGRECIEVER = ?) OR (MSGSENDER = ? AND MSGRECIEVER = ?) ORDER BY ID DESC LIMIT 10 OFFSET "+chatHistory.LoadMoreMessages+"", chatHistory.MsgSender, chatHistory.MsgReciever, chatHistory.MsgReciever, chatHistory.MsgSender)
 
 	if err != nil {
 		fmt.Println("Error selecting all users", err)
@@ -57,11 +59,12 @@ func SendChatHistory(w http.ResponseWriter, r *http.Request) {
 	for sql_chat.Next() {
 		var sender string
 		var chat string
+		var time string
 
-		if err := sql_chat.Scan(&sender, &chat); err != nil {
+		if err := sql_chat.Scan(&sender, &chat, &time); err != nil {
 			log.Fatal(err)
 		}
-		SendPrivateMessages = append(SendPrivateMessages, ChatHistory{Sender: sender, Text: chat})
+		SendPrivateMessages = append(SendPrivateMessages, ChatHistory{Sender: sender, Text: chat, Time: time})
 	}
 
 	jsonResponse, err := json.Marshal(SendPrivateMessages)

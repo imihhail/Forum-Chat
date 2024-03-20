@@ -49,6 +49,7 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 			MsgReciever string `json:"msgReciever"`
 			Type        string `json:"type"`
 			SentMsg     string `json:"sentMsg"`
+			Time        string `json:"time"`
 		}
 
 		err = json.Unmarshal(msg, &message)
@@ -57,20 +58,19 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		saveChat, err := Db.Prepare("insert into PRIVATEMESSAGES (MSGSENDER, MSGRECIEVER, TEXTMSG) values (?, ?, ?)")
+		saveChat, err := Db.Prepare("insert into PRIVATEMESSAGES (MSGSENDER, MSGRECIEVER, TEXTMSG, TIME) values (?, ?, ?, ?)")
 		if err != nil {
 			fmt.Println("Error retrieving textmessage")
 			return
 		}
 
-		_, err = saveChat.Exec(message.MsgSender, message.MsgReciever, message.SentMsg)
+		_, err = saveChat.Exec(message.MsgSender, message.MsgReciever, message.SentMsg, message.Time)
 		if err != nil {
 			fmt.Println("Error saving piravemessage into database")
 			return
 		}
 
 		clients[message.MsgReciever].WriteMessage(websocket.TextMessage, msg)
-		//clients[message.MsgSender].WriteMessage(websocket.TextMessage, msg)
 	}
 }
 
