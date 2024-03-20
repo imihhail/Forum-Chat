@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"forum/gofiles"
 	"net/http"
-
-	"github.com/gorilla/websocket"
 )
 
 func main() {
@@ -22,7 +19,7 @@ func main() {
 	http.HandleFunc("/showcomments", gofiles.ShowComments)
 	http.HandleFunc("/likes", gofiles.Likes)
 	http.HandleFunc("/chathistory", gofiles.SendChatHistory)
-	http.HandleFunc("/echo", gofiles.WebSocket) 
+	http.HandleFunc("/echo", gofiles.WebSocket)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "static/index.html")
 	})
@@ -31,11 +28,11 @@ func main() {
 	http.ListenAndServe("localhost:4040", nil)
 }
 
-func SendUsers(conn *websocket.Conn, registeredUsers []string) {
-	registeredUsersJSON, _ := json.Marshal(registeredUsers)
-
-	if err := conn.WriteMessage(websocket.TextMessage, registeredUsersJSON); err != nil {
-		fmt.Println("write:", err)
-		return
-	}
-}
+//func SendUsers(conn *websocket.Conn, registeredUsers []string) {
+//	registeredUsersJSON, _ := json.Marshal(registeredUsers)
+//
+//	if err := conn.WriteMessage(websocket.TextMessage, registeredUsersJSON); err != nil {
+//		fmt.Println("write:", err)
+//		return
+//	}
+//}

@@ -70,7 +70,7 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 		}
 
 		clients[message.MsgReciever].WriteMessage(websocket.TextMessage, msg)
-		clients[message.MsgSender].WriteMessage(websocket.TextMessage, msg)
+		//clients[message.MsgSender].WriteMessage(websocket.TextMessage, msg)
 	}
 }
 

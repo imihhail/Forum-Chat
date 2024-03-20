@@ -45,7 +45,8 @@ func SendChatHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sql_chat, err := Db.Query("SELECT MSGSENDER, TEXTMSG FROM PRIVATEMESSAGES WHERE MSGSENDER = ? AND MSGRECIEVER = ? OR MSGSENDER = ? AND MSGRECIEVER = ?", chatHistory.MsgSender, chatHistory.MsgReciever, chatHistory.MsgReciever, chatHistory.MsgSender)
+	sql_chat, err := Db.Query("SELECT MSGSENDER, TEXTMSG FROM PRIVATEMESSAGES WHERE (MSGSENDER = ? AND MSGRECIEVER = ?) OR (MSGSENDER = ? AND MSGRECIEVER = ?) ORDER BY ID DESC LIMIT 10", chatHistory.MsgSender, chatHistory.MsgReciever, chatHistory.MsgReciever, chatHistory.MsgSender)
+
 	if err != nil {
 		fmt.Println("Error selecting all users", err)
 	}
@@ -62,8 +63,6 @@ func SendChatHistory(w http.ResponseWriter, r *http.Request) {
 		}
 		SendPrivateMessages = append(SendPrivateMessages, ChatHistory{Sender: sender, Text: chat})
 	}
-
-	//fmt.Println("Ajalugu", SendPrivateMessages)
 
 	jsonResponse, err := json.Marshal(SendPrivateMessages)
 	if err != nil {

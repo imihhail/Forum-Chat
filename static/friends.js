@@ -4,11 +4,13 @@ export function displayFriends(sidebar, loggedInUser) {
        
     socket.onopen = () => console.log("Websocket connected!")
 
-    socket.onmessage = function(event) {    
-        
+    socket.onmessage = function(event) {       
         let data = JSON.parse(event.data)
-        if (data.type == 'message') {        
-            appendMessageToUI(data.sentMsg, data.msgSender)
+
+        if (data.type == 'message') {
+            let allMessages = document.querySelector(`[room=${data.msgReciever}-${data.msgSender}]`)
+            if (allMessages != null)
+            appendMessageToUI(data.sentMsg, data.msgSender, data.msgReciever)
         }
 
         if (data.type == 'onlineUsers') {
@@ -45,9 +47,10 @@ export function displayFriends(sidebar, loggedInUser) {
     socket.onerror = (error) => console.log("Socket error:", error)
 
     socket.onclose = (e) => console.log("Socket closed",e);
-
-    function appendMessageToUI(message, sender) {
-        const allMessages = document.querySelector('.allMessages');
+        
+    function appendMessageToUI(message, sender, reciever) {
+        let allMessages = document.querySelector(`[room=${reciever}-${sender}]`)
+        console.log(allMessages);
         const msgOutput = document.createElement('p');
         msgOutput.innerHTML = `<b>${sender}</b><br> ${message}`
         allMessages.appendChild(msgOutput);
@@ -74,18 +77,25 @@ function openChat(msgSender, msgReciever, socket) {
             const msgOutput = document.createElement('p');
             msgOutput.innerHTML = `<b>${data[i].Sender}</b><br> ${data[i].Text}`
             allMessages.appendChild(msgOutput);
-        }
-        
+        }   
     })
     .catch((error) => {
-    console.error('Error from chathistory:', error);
+        console.error('Error from chathistory:', error);
     })
 
     let chatWindowContainer = document.createElement('div')
     chatWindowContainer.className = 'chatWindowContainer'
+    
+    let closeButton = document.createElement('div')
+    closeButton.innerHTML = '&times;'
+    closeButton.className = 'closeButton'
+    closeButton.addEventListener('click', () => {
+        chatWindowContainer.remove()
+    })
 
     let allMessages = document.createElement('div')
     allMessages.className = 'allMessages'
+    allMessages.setAttribute('room', `${msgSender}-${msgReciever}`)
     allMessages.style.overflow = 'auto'
 
     let textArea = document.createElement('div')
@@ -99,16 +109,20 @@ function openChat(msgSender, msgReciever, socket) {
     sendMsgButton.className = 'sendMsgButton'
     sendMsgButton.innerHTML = `${msgReciever}`
 
+    chatWindowContainer.appendChild(closeButton)
     chatWindowContainer.appendChild(allMessages)
     textArea.appendChild(typeBox)
     textArea.appendChild(sendMsgButton)
     chatWindowContainer.appendChild(textArea)
     document.body.appendChild(chatWindowContainer)
-
     sendMsgButton.addEventListener('click', createMsg)
 
     function createMsg(){
         let typeBox = document.querySelector('.sentText').value
+        const msgOutput = document.createElement('p')
+
+        msgOutput.innerHTML = `<b>${msgSender}</b><br> ${typeBox}`
+        allMessages.appendChild(msgOutput);
      
         let msg = JSON.stringify({
             msgSender: msgSender,
