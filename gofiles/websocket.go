@@ -17,7 +17,7 @@ var clients = make(map[string]*websocket.Conn)
 var OnlineUsers []string
 
 func WebSocket(w http.ResponseWriter, r *http.Request) {
-	registeredUsers := ShowUsers()
+	registeredUsers := ShowUsers(returnUser(r))
 
 	conn, _ := upgrader.Upgrade(w, r, nil)
 
@@ -41,8 +41,6 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return
 		}
-
-		//fmt.Printf("%s send: %s\n", conn.RemoteAddr(), msg)
 
 		var message struct {
 			MsgSender   string `json:"msgSender"`
@@ -70,14 +68,29 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		clients[message.MsgReciever].WriteMessage(websocket.TextMessage, msg)
+		if client, ok := clients[message.MsgReciever]; ok {
+			client.WriteMessage(websocket.TextMessage, msg)
+		} else {
+			fmt.Print("")
+		}
+
+		registeredUsers := ShowUsers(returnUser(r))
+		SendUsers(conn, registeredUsers)
+		updateOnlineUsers()
+		
+		// Update userlist order after recieving message
+		if clients[message.MsgReciever] != nil {
+			registeredUsers = ShowUsers(message.MsgReciever)
+			SendUsers(clients[message.MsgReciever], registeredUsers)
+			updateOnlineUsers()
+		}
 	}
 }
 
-func SendUsers(conn *websocket.Conn, registeredUsers []string) {
+func SendUsers(conn *websocket.Conn, registeredUsers []AllUsers) {
 	var Data struct {
-		Type  string   `json:"type"`
-		Users []string `json:"registeredusers"`
+		Type  string     `json:"type"`
+		Users []AllUsers `json:"registeredusers"`
 	}
 
 	Data.Type = "registered"

@@ -20,6 +20,8 @@ export function CheckSession() {
 }
 
 export function registration() {
+    header.style.justifyContent = 'end'
+
     let loginLink = document.createElement('a');
     loginLink.innerHTML = `<b>Login</b>`
     header.appendChild(loginLink)

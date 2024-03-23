@@ -10,17 +10,30 @@ let mainContent = document.createElement('div')
 mainContent.className = 'maincontent'
 
 export function home(username) {
+    header.style.justifyContent = 'space-between'
     loggedInUser = username
     header.innerHTML = ''
 
+    let menu = document.createElement('p');
+    menu.className = 'menu';
+    menu.innerHTML = '<b>Menu</b>'
+    menu.addEventListener('click', () => {
+        let sidebar = document.getElementsByClassName('sidebar')[0]
+        sidebar.classList.toggle("showsidebar");
+    });
+    header.appendChild(menu);
+    
+
+    let logDiv = document.createElement('div')
+    logDiv.style.display = 'flex'
+
     let currentUser = document.createElement('p')
     currentUser.innerHTML = `Logged in as: <b>${username}</b>`
-    header.appendChild(currentUser)
+    logDiv.appendChild(currentUser)
 
     let logOut = document.createElement('p')
     logOut.className = 'logout'
     logOut.innerHTML = 'Logout'
-    logOut.style.marginLeft = '1vw'
 
     logOut.addEventListener('click', function(event) {
         event.preventDefault()
@@ -29,7 +42,8 @@ export function home(username) {
         
         router('/login')
     })
-    header.appendChild(logOut)
+    logDiv.appendChild(logOut)
+    header.appendChild(logDiv)
     
     postsBody()
     showPosts()
@@ -44,8 +58,8 @@ function postsBody() {
     categoriePicker.className = "categoriePicker";
     categoriePicker.innerHTML = `
         <div>
-            <input type="checkbox" value="Pictures">
-            <label for="Pictures">Pictures</label>
+            <input  style="margin: 0px;" type="checkbox" value="Pictures">
+            <label  for="Pictures">Pictures</label>
             <input type="checkbox" value="Memes">
             <label for="Memes">Memes</label>
             <input type="checkbox" value="Code">
@@ -105,20 +119,23 @@ function showPosts(postFromUser) {
         let start = 0
         postFromUser == 1? start = data.length - 1 : start = 0
 
-        for(let i = start ; i < data.length ; i++){
+        for(let i = start ; i < data.length ; i++){          
             let postDiv = document.createElement('div')
+            if (i == 0) {postDiv.id = 'firstPost'}
             postDiv.className = 'postDiv'
             postDiv.setAttribute('postcreator', data[i].AllUsers)
             postDiv.setAttribute('Pictures', data[i].Cat1)
             postDiv.setAttribute('Memes', data[i].Cat2)
             postDiv.setAttribute('Code', data[i].Cat3)
             postDiv.setAttribute('Misc', data[i].Cat4)
-            let postLikers =  data[i].PostUsernames[i]
+            let postLikers = data[i].PostUsernames[i]
+
             if (postLikers != null) {
                 postLikers.forEach(liker =>{
                     postDiv.setAttribute(liker, liker)  
                 })
             }
+
             let postCreator = document.createElement('p')
             postCreator.innerHTML = `<b>${data[i].AllUsers}:</b>`
             postCreator.style.marginBottom = '2vh'
@@ -134,7 +151,7 @@ function showPosts(postFromUser) {
 
             let likeImg = document.createElement('img')
             likeImg.src = 'static/pictures/like.png'
-            likeImg.style.width = '2.5vh'
+            likeImg.className = 'likePicture'
 
             likeImg.addEventListener('click', function(){
                 postDiv.setAttribute(loggedInUser, loggedInUser)
@@ -154,19 +171,19 @@ function showPosts(postFromUser) {
                     likeCount.innerHTML = data.likeCountAfterLike
                     dislikeCount.innerHTML = data.disLikeCountAfterLike
                 })
-            })
-            
+            })          
             likeSection.appendChild(likeImg)
 
             let likeCount = document.createElement('p')
             likeCount.innerHTML = data[i].LikeCount
             likeCount.style.marginRight = '1vh'
+            likeCount.style.opacity = '0.5'
             likeSection.style.position = 'relative';
             likeSection.appendChild(likeCount)
 
             let dislikeImg = document.createElement('img')
             dislikeImg.src = 'static/pictures/dislike.png' 
-            dislikeImg.style.width = '2.5vh'
+            dislikeImg.className = 'likePicture'
 
             dislikeImg.addEventListener('click', function(){
                 postDiv.removeAttribute(loggedInUser)
@@ -190,11 +207,13 @@ function showPosts(postFromUser) {
             likeSection.appendChild(dislikeImg)
 
             let dislikeCount = document.createElement('p')
+            dislikeCount.style.opacity = '0.5'
             dislikeCount.innerHTML = data[i].DisLikeCount
             likeSection.appendChild(dislikeCount)
 
             let showComments = document.createElement('p')
-            showComments.innerHTML = `<u>Show Comments (0)</u>`
+            showComments.innerHTML = `<u>Show Comments</u>`
+            showComments.style.cursor = 'pointer'
             showComments.style.position = 'absolute';
             showComments.style.right = '0';
             showComments.style.bottom = '0';
@@ -241,7 +260,7 @@ function handleComments(postID, commentCreated) {
 
             let likeImg = document.createElement('img')
             likeImg.src = 'static/pictures/like.png'
-            likeImg.style.width = '2.5vh'
+            likeImg.className = 'likePicture'
 
             likeImg.addEventListener('click', function(){
                 let Likedata = {
@@ -265,13 +284,14 @@ function handleComments(postID, commentCreated) {
 
             let likeCount = document.createElement('p')
             likeCount.innerHTML = data[i].LikeCount
+            likeCount.style.opacity = '0.5'
             likeCount.style.marginRight = '1vh'
             likeSection.style.position = 'relative';
             likeSection.appendChild(likeCount)
 
             let dislikeImg = document.createElement('img')
             dislikeImg.src = 'static/pictures/dislike.png' 
-            dislikeImg.style.width = '2.5vh'
+            dislikeImg.className = 'likePicture'
 
             dislikeImg.addEventListener('click', function(){
                 let Likedata = {
@@ -295,6 +315,7 @@ function handleComments(postID, commentCreated) {
 
             let dislikeCount = document.createElement('p')
             dislikeCount.innerHTML = data[i].DisLikeCount
+            likeCount.style.opacity = '0.5'
             likeSection.appendChild(dislikeCount)
             
             postDiv.appendChild(likeSection)
@@ -324,7 +345,7 @@ function handleComments(postID, commentCreated) {
     submitDiv.appendChild(commentArea)
 
     let closeButton = document.createElement('div')
-    closeButton.innerHTML = '&times;'
+    closeButton.innerHTML = '&times'
     closeButton.className = 'closeButton'
     closeButton.addEventListener('click', function(){
         commentForm.remove()
@@ -368,21 +389,28 @@ function createSideBar() {
     let sidebar = document.createElement('div')
     sidebar.className = 'sidebar'
     sidebar.innerHTML = `
+    <p class = "sidetitle">Filter Posts</p>
     <nav class="navbar">
     <ul>
         <li><p class = "allposts" >All posts</p></li>
         <li><p class = "myposts" >My posts</p></li>
-        <li><p class = "mylikes" >My liked posts</p></li>
+        <li><p class = "mylikes" >Liked posts</p></li>
         <li><p class = "Pictures" >Pictures</p></li>
         <li><p class = "Memes" >Memes</p></li>
         <li><p class = "Code" >Code</p></li>
         <li><p class = "Misc" >Misc</p></li>
     </ul>
     </nav>
+    <p class = "sidetitle">All Users</p>
     `
+
     let closeButton = document.createElement('div')
     closeButton.innerHTML = '&times;'
     closeButton.className = 'sidecloseButton'
+    closeButton.addEventListener('click', () => {
+        let sidebar = document.getElementsByClassName('sidebar')[0]
+        sidebar.classList.toggle("showsidebar");
+    });
 
     sidebar.prepend(closeButton)
     app.prepend(sidebar)
@@ -423,7 +451,7 @@ function filterPosts(filterChoice) {
     hidePosts.forEach(post => post.style.display = 'none')
 
     let filteredPosts 
-    filterChoice.textContent == 'My liked posts' ? filteredPosts = loggedInUser : filteredPosts = filterChoice.textContent
+    filterChoice.textContent == 'Liked posts' ? filteredPosts = loggedInUser : filteredPosts = filterChoice.textContent
 
     let displayFilteredPosts = document.querySelectorAll(`.postDiv[${filteredPosts}="${filteredPosts}"]`)
     displayFilteredPosts.forEach(post => post.style.display = '')

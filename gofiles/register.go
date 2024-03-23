@@ -27,6 +27,7 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 		Status = false
 		var email_userName_Count int
+
 		// Check if email or username already exists in database. Count the number of rows that match the email or username.
 		// Add the count to variable email_userName_Count.
 		err := Db.QueryRow("SELECT COUNT(*) FROM people WHERE EMAIL = ? OR USERNAME = ?", user.Email, user.Username).Scan(&email_userName_Count)
@@ -64,12 +65,10 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 		if Status {
 			response.ErrorMsg = ""
 			response.Username = user.Username
-			
-			// Update registered user for all clients
-			AllUsers = nil
-			var registeredUsers []string
-			registeredUsers = append(registeredUsers, user.Username)
-			for _, conn := range clients  {
+
+			var registeredUsers []AllUsers
+
+			for _, conn := range clients {
 				SendUsers(conn, registeredUsers)
 			}
 		}
@@ -77,17 +76,12 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 			response.ErrorMsg = "E-mail or Username already taken!"
 		}
 
-		// Convert the response struct to JSON
 		jsonResponse, err := json.Marshal(response)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		// Set the content type to application/json and write the response
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonResponse)
 	}
 }
-
-

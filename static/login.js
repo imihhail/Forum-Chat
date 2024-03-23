@@ -9,9 +9,11 @@ let loginForm = document.createElement('form');
 loginForm.className = 'loginWindow';
 
 export function login() {
-    let loginLink = document.createElement('a');
-    loginLink.innerHTML = `<b>Register</b>`;
-    header.appendChild(loginLink);
+    header.style.justifyContent = 'end'
+
+    let loginLink = document.createElement('a')
+    loginLink.innerHTML = `<b>Register</b>`
+    header.appendChild(loginLink)
 
     loginLink.addEventListener('click', function(event){
         event.preventDefault()
