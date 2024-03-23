@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 func PostComment(w http.ResponseWriter, r *http.Request) {
@@ -36,6 +37,8 @@ func PostComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func ShowComments(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(50 * time.Millisecond) //GOroutine :)
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading request body",
@@ -53,8 +56,8 @@ func ShowComments(w http.ResponseWriter, r *http.Request) {
 		AllComments   []string
 		AllUsers      []string
 		AllCommentIDs []int
-		LikeCount    []int
-		DisLikeCount []int
+		LikeCount     []int
+		DisLikeCount  []int
 	}
 
 	var AllCommentData []Data
@@ -69,7 +72,7 @@ func ShowComments(w http.ResponseWriter, r *http.Request) {
 		if err := sql_comments.Scan(&commentCreator, &comment, &postID, &likeCount, &disLikeCount); err != nil {
 			log.Fatal(err)
 		}
-		AllCommentData = append(AllCommentData, Data{AllUsers: []string{commentCreator},AllComments: []string{comment}, AllCommentIDs: []int{postID}, LikeCount: []int{likeCount}, DisLikeCount: []int{disLikeCount}})
+		AllCommentData = append(AllCommentData, Data{AllUsers: []string{commentCreator}, AllComments: []string{comment}, AllCommentIDs: []int{postID}, LikeCount: []int{likeCount}, DisLikeCount: []int{disLikeCount}})
 	}
 
 	jsonResponse, err := json.Marshal(AllCommentData)

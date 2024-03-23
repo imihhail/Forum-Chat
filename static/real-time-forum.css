@@ -50,8 +50,9 @@ header {
 
 #postsCointainer {
     overflow: auto;
-    height: 100%;
+    height: 90%;
     margin-top: 5vh;
+    margin-bottom: 5vh;
 }
 
 .sidebar {
@@ -126,6 +127,7 @@ li {
     font-size: 4vh;
     transform: translateY(-25%);
     transition: 0.3s;
+    font-weight: bold;
 }
 
 .sidecloseButton {
@@ -134,9 +136,10 @@ li {
     position: absolute;
     transform: translateY(-25%);
     cursor: pointer;
-    font-size: 2vw;
+    font-size: 3vh;
     transition: 0.3s;
-    color: white
+    color: white;
+    font-weight: bold;
 }
 
 @-moz-document url-prefix() {
@@ -174,7 +177,7 @@ li {
 .chatbox {
     width: 100%;
     background: hsl(0, 0%, 60%);
-    padding: 2.2vh;
+    padding: 3vh;
     transition: 1s;
 }
 
@@ -287,7 +290,7 @@ a {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    padding: 2.2vh;
+    padding: 3vh;
     transition: 1s;
 }
 

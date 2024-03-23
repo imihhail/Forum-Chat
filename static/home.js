@@ -242,6 +242,7 @@ function handleComments(postID, commentCreated) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("Pikkus",data);
         let start = 0
         commentCreated == 1? start = data.length - 1 : start = 0
 
@@ -321,7 +322,7 @@ function handleComments(postID, commentCreated) {
 
             let dislikeCount = document.createElement('p')
             dislikeCount.innerHTML = data[i].DisLikeCount
-            likeCount.style.opacity = '0.5'
+            dislikeCount.style.opacity = '0.5'
             likeSection.appendChild(dislikeCount)
             
             postDiv.appendChild(likeSection)
