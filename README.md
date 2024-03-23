@@ -1,17 +1,10 @@
-# make-your-game-score-handling
+# real-time-forum
 
-### Authors: Ivar Mihhailov & Tanel Soidla / imihhail / TanelS
+### Author: Ivar Mihhailov / imihhail 
 
 ## Description
 
-At the end of the game, you should be able to enter your name and then game shows scoreboard where your score is included. Scoreboard shows your and other players rank.
-All scores are saved into GO api. 
-
-## How to play?
-
-Use arrowkeys to move the block and uparrow to rotate.
-Everytime when you remove rows, more time will be added.
-To win you have to get highest score (Rank 1).
+Real time forum is single page application, where data changes are live and page never has to reload. Forum also has attached messenger where you can see other users and can send private messegas to them.
 
 # Usage: how to run
 
@@ -21,14 +14,19 @@ To win you have to get highest score (Rank 1).
 
 3. Run the command: "go run . "
 
-4. Open localhost:4040 in your webbrowser
- 
-If you have trouble understanding project/instructions, feel free to contact us :)
+## How to send private messages?
+
+1. Register two accounts.
+
+2. Use one webbrowser(f.e chrome) to login one account and second webbrowser(f.e Edge) to login second account.
+
+3. From left sidebar, you see other registered users. Click on user name and send a message.
+
 
 ## Links
 
-Instructions link: https://github.com/01-edu/public/tree/master/subjects/make-your-game/score-handling
-Audit link: https://github.com/01-edu/public/tree/master/subjects/make-your-game/score-handling/audit
+Instructions link: https://github.com/01-edu/public/tree/master/subjects/real-time-forum
+Audit link: https://github.com/01-edu/public/tree/master/subjects/real-time-forum/audit
 
 
 
