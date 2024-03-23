@@ -50,9 +50,8 @@ header {
 
 #postsCointainer {
     overflow: auto;
-    height: 90%;
+    height: 95%;
     margin-top: 5vh;
-    margin-bottom: 5vh;
 }
 
 .sidebar {
