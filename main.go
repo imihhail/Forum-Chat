@@ -27,12 +27,3 @@ func main() {
 	fmt.Println("Server is running at: http://localhost:4040")
 	http.ListenAndServe("localhost:4040", nil)
 }
-
-//func SendUsers(conn *websocket.Conn, registeredUsers []string) {
-//	registeredUsersJSON, _ := json.Marshal(registeredUsers)
-//
-//	if err := conn.WriteMessage(websocket.TextMessage, registeredUsersJSON); err != nil {
-//		fmt.Println("write:", err)
-//		return
-//	}
-//}

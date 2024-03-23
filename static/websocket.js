@@ -2,11 +2,11 @@ export function displayFriends(sidebar, loggedInUser) {
     let usersDiv = document.createElement('div')
     let socket = new WebSocket("ws://localhost:4040/echo")
        
-    socket.onopen = () => console.log("Websocket connected!")
+    socket.onopen = (e) => console.log("Websocket connected!",e)
     
-    socket.onmessage = function(event) {       
+    socket.onmessage = function(event) {
         let data = JSON.parse(event.data)
-
+        
         if (data.type == 'message') {
             let allMessages = document.querySelector(`[room=${data.msgReciever}-${data.msgSender}]`)
 
@@ -40,6 +40,8 @@ export function displayFriends(sidebar, loggedInUser) {
             data.registeredusers != null ? usersDiv.innerHTML = '' : socket.send('{}')
 
             for (let i = 0 ; i < data.registeredusers.length ; i++) {
+                if (data.registeredusers[i].Username == loggedInUser) {continue}
+                    
                 let registeredUsers = document.createElement('p')
                 registeredUsers.className = 'registered'
                 registeredUsers.setAttribute('user', data.registeredusers[i].Username)
@@ -60,7 +62,7 @@ export function displayFriends(sidebar, loggedInUser) {
          })
         .catch((error) => {
             console.error('Error:', error);
-        });
+        })
     })
     
     socket.onerror = (error) => console.log("Socket error:", error)
@@ -111,6 +113,9 @@ function requestChatHistory(msgSender, msgReciever, loadmessages) {
 
 // Open chatroom and display theyr chathistory. Set loadmessages to 0 so it displays only last 10 messages 
 function openChat(msgSender, msgReciever, socket, time) {
+    let remvoChat = document.querySelector('.chatWindowContainer')
+    if (remvoChat != null) {remvoChat.remove()}
+    
     loadmessages = 0
     requestChatHistory(msgSender, msgReciever, loadmessages, time)
 
@@ -158,7 +163,12 @@ function openChat(msgSender, msgReciever, socket, time) {
     textArea.appendChild(sendMsgButton)
     postDiv.appendChild(textArea)
     chatWindowContainer.appendChild(postDiv)
-    document.body.appendChild(chatWindowContainer)
+
+    setTimeout(() => {
+        chatWindowContainer.classList.toggle("centerDiv");
+    },100)
+    
+    app.appendChild(chatWindowContainer)
     sendMsgButton.addEventListener('click', createMsg)
 
     function createMsg(){
@@ -170,6 +180,7 @@ function openChat(msgSender, msgReciever, socket, time) {
         let formattedTime = currentTime.getDate() + "/" + month + "/" + currentTime.getFullYear() + " " + hours + ":" + minutes + ":" + seconds
         
         let typeBox = document.querySelector('.sentText').value
+        let cleanText = document.querySelector('.sentText')
         const msgOutput = document.createElement('p')
         msgOutput.className = 'privatemessage'
 
@@ -184,12 +195,13 @@ function openChat(msgSender, msgReciever, socket, time) {
             time: formattedTime
         })
         socket.send(msg)
+        cleanText.value = ''
     }
 }
 
 let counDown = 1
 let start = 0
-let loadTime = 500
+let loadTime = 200
 var upDateReciever
 
 function loadMoreMessages(msgSender, msgReciever, time) {
@@ -207,5 +219,5 @@ function loadMoreMessages(msgSender, msgReciever, time) {
         },loadTime)
     }
     counDown = 2
-    loadTime = 500
+    loadTime = 200
 }

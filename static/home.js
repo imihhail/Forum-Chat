@@ -1,5 +1,5 @@
 import { router } from './router.js'
-import { displayFriends } from './friends.js';
+import { displayFriends } from './websocket.js';
 
 let loggedInUser
 
@@ -23,7 +23,6 @@ export function home(username) {
     });
     header.appendChild(menu);
     
-
     let logDiv = document.createElement('div')
     logDiv.style.display = 'flex'
 
@@ -39,7 +38,7 @@ export function home(username) {
         event.preventDefault()
         header.innerHTML = ''
         mainContent.innerHTML = ''
-        
+        postsCointainer.innerHTML = ''
         router('/login')
     })
     logDiv.appendChild(logOut)
@@ -90,6 +89,7 @@ function HandlePosts(event) {
     }
 
     let postText = document.querySelector('textarea').value
+    let cleantext = document.querySelector('textarea')
     let checkedCategories = Array.from(checkboxes).map(checkbox => checkbox.checked ? checkbox.value : '')
 
     let data = {
@@ -106,18 +106,20 @@ function HandlePosts(event) {
         body: JSON.stringify(data)
     })
     let postFromUser = 1
-    showPosts(postFromUser)
+    cleantext.value = ''
+    showPosts(postFromUser)   
 }
 
+let postsCointainer = document.createElement('div')
+postsCointainer.id = 'postsCointainer'
+let commentOpened = false
+
 function showPosts(postFromUser) {
-    let postsCointainer = document.createElement('div')
-    postsCointainer.id = 'postsCointainer'
-    
     fetch('/showposts')
     .then(response => response.json())
     .then(data => {
         let start = 0
-        postFromUser == 1? start = data.length - 1 : start = 0
+        postFromUser == 1 ? start = data.length - 1 : start = 0
 
         for(let i = start ; i < data.length ; i++){          
             let postDiv = document.createElement('div')
@@ -217,8 +219,12 @@ function showPosts(postFromUser) {
             showComments.style.position = 'absolute';
             showComments.style.right = '0';
             showComments.style.bottom = '0';
-            showComments.addEventListener('click', () => handleComments(data[i].AllPostIDs))
-
+            showComments.addEventListener('click', () => {
+                if (!commentOpened) {
+                    handleComments(data[i].AllPostIDs)
+                    commentOpened = true
+                }
+            })
             likeSection.appendChild(showComments)
             postDiv.appendChild(likeSection)
             postsCointainer.appendChild(postDiv)          
@@ -349,6 +355,7 @@ function handleComments(postID, commentCreated) {
     closeButton.className = 'closeButton'
     closeButton.addEventListener('click', function(){
         commentForm.remove()
+        commentOpened = false
     })
 
     let commentButton = document.createElement('button')

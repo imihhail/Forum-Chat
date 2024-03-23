@@ -24,14 +24,12 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 	clients[returnUser(r)] = conn
 
 	defer func() {
-		fmt.Println("Kustub kasutaja", returnUser(r))
 		delete(clients, returnUser(r))
 		conn.Close()
 		updateOnlineUsers()
 	}()
 
 	OnlineUsers = nil
-	fmt.Println("Kliendid: ", clients)
 
 	SendUsers(conn, registeredUsers)
 	updateOnlineUsers()
@@ -77,7 +75,7 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 		registeredUsers := ShowUsers(returnUser(r))
 		SendUsers(conn, registeredUsers)
 		updateOnlineUsers()
-		
+
 		// Update userlist order after recieving message
 		if clients[message.MsgReciever] != nil {
 			registeredUsers = ShowUsers(message.MsgReciever)
@@ -125,6 +123,7 @@ func updateOnlineUsers() {
 	for _, user := range sessions {
 		OnlineUsers = append(OnlineUsers, user)
 	}
+	
 	for _, conn := range clients {
 		SendOnlineUsers(conn)
 	}
